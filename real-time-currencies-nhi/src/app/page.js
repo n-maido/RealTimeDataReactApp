@@ -37,7 +37,9 @@ export default function Home() {
         const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
         // we convert the data, but since we need to wait for the data, this line needs "await" too
         const jsonData = await data.json()
-        console.log(jsonData);
+        
+        setStockInfo(jsonData.results)
+        console.log(jsonData.results);
       } catch (error) {
         console.error(error)
       }
@@ -45,6 +47,13 @@ export default function Home() {
     // we first declare the func above, then run it below
     getInfo()
   }, [])
+
+  /**
+   * print stock info when it changes
+   */
+  useEffect(() => {
+    console.log("Hey now I'm in a state", stockInfo);
+  }, [stockInfo])
 
 
   /**
@@ -56,14 +65,14 @@ export default function Home() {
       {/**
        * Conditionally render the poke img and data if they're available
        */}
-      {pokemonImage && pokeData ?
+      {/* {pokemonImage && pokeData ?
         <>
           <img src={pokemonImage} style={{height:'400px'}}/>
           <p>{pokeData.name}</p>
         </>
         :
-        <p></p>
-      }
+        <p></p> }
+      */}
 
     </main>
   )
