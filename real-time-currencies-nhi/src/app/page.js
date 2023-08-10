@@ -3,6 +3,7 @@
 // import components and styles
 import Image from 'next/image'
 import styles from './page.module.css'
+import LineChart from './components/LineChart';
 
 // useState and useEffect are hooks
 import { useState, useEffect } from 'react'
@@ -35,9 +36,11 @@ export default function Home() {
         // using promises: "i'll give you this info, but wait until i finish your request"
         // await waits until we get the info
         const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
-        // we convert the data, but since we need to wait for the data, this line needs "await" too
+        // we convert the data, but since we need to wait for the data first, this line needs "await" too
         const jsonData = await data.json()
-        console.log(jsonData);
+        
+        setStockInfo(jsonData.results)
+        console.log(jsonData.results);
       } catch (error) {
         console.error(error)
       }
@@ -46,25 +49,20 @@ export default function Home() {
     getInfo()
   }, [])
 
+  /**
+   * print stock info when it changes
+   */
+  useEffect(() => {
+    console.log("Hey now I'm in a state", stockInfo);
+  }, [stockInfo])
+
 
   /**
    * JSX code usually goes here
    */
   return (
     <main className={styles.main}>
-      <h1>Hello World!</h1>
-      {/**
-       * Conditionally render the poke img and data if they're available
-       */}
-      {pokemonImage && pokeData ?
-        <>
-          <img src={pokemonImage} style={{height:'400px'}}/>
-          <p>{pokeData.name}</p>
-        </>
-        :
-        <p></p>
-      }
-
+     <LineChart/>
     </main>
   )
 }
