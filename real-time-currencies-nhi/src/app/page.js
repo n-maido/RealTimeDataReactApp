@@ -18,6 +18,27 @@ export default function Home() {
   // poke img is a url, so we init it to ""
   const [stockInfo, setStockInfo] = useState([])
 
+  // copy pasted from options.js
+  const [options, setOptions] = useState({
+    options: {
+      chart: {
+        id: "basic-bar"
+      },
+      xaxis: {
+        // timestamps
+        categories: []
+      }
+    },
+    series: [
+      {
+        name: "series-1",
+        data: [30, 40, 45, 50, 49, 60, 70, 91, 95, 91]
+      }
+    ]
+  });
+
+
+
   // useEffect is a hook
   // hooks are pre-build funcs used to do stuff like:
   // - handle states
@@ -53,6 +74,27 @@ export default function Home() {
    * print stock info when it changes
    */
   useEffect(() => {
+    /**
+     * Fill categories and data lists
+     * @param elemCount is num of elems we wanna plot
+     */
+    const fillChart = (elemCount) => {
+      for (let i = 0; i < elemCount; i++ ) {
+          // fill categories
+          options.options.xaxis.categories.append(setCategory(stockInfo[i].t))
+      } 
+    }
+
+    /**
+     * Converts timestamps to date
+     * @param {*} timestamp 
+     */
+    const setCategory = (timestamp) => {
+        date = new Date(timestamp)
+        return date
+    }
+
+    fillChart(10);
     console.log("Hey now I'm in a state", stockInfo);
   }, [stockInfo])
 
@@ -62,7 +104,7 @@ export default function Home() {
    */
   return (
     <main className={styles.main}>
-     <LineChart/>
+     <LineChart options = {options} />
     </main>
   )
 }
