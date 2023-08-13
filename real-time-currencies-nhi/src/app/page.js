@@ -20,7 +20,7 @@ export default function Home() {
 
   // copy pasted from options.js
   const [options, setOptions] = useState({
-    options: {
+    options: { 
       chart: {
         id: "basic-bar"
       },
@@ -29,6 +29,7 @@ export default function Home() {
         categories: []
       }
     },
+    // data points
     series: [
       {
         name: "series-1",
@@ -66,36 +67,63 @@ export default function Home() {
         console.error(error)
       }
     }
-    // we first declare the func above, then run it below
+
+      /**
+     * Fill categories and data lists
+     * @param elemCount is num of elems we wanna plot
+     */
+      const fillChart = (elemCount) => {
+        // create copy of options and categories state
+        // bc state is immutable: https://reacttraining.com/blog/state-in-react-is-immutable
+        // we wanna make a copy, update it, and replace the old with the updated copy
+        // instructor code:
+        const optionsCopy = {...options}
+        const categoriesCopy = [...optionsCopy.options.xaxis.categories]
+  
+        stockInfo.slice(0, elemCount).map(item => {
+          // instructor code
+          if (item.t) {
+            categoriesCopy.push(convertTimestamp(item.t))
+            console.log(convertTimestamp(item.t));
+          } else return null
+        })
+  
+        optionsCopy.options.xaxis.categories = categoriesCopy
+        setOptions(optionsCopy)
+        
+        // replaced with this syntax from the above article
+        // setOptions([...options.options.xaxis.categories, item.t])
+      }
+  
+      /**
+       * Converts timestamps to hours and minutes
+       * @param {*} timestamp 
+       */
+      const convertTimestamp = (timestamp) => {
+          const date = new Date(timestamp)
+          // extract hours and minutes
+          return `${date.getHours()}:${date.getMinutes()}`
+      }
+    // we first declare the funcs above, then run it below
     getInfo()
+
+    // fill the chart after we receive the data
+    // otherwise we have an empty array that will throw an error
+    if (stockInfo.length == 120) {
+      fillChart(10)
+    }
+
   }, [])
+
+  useEffect(() => {
+    console.log('Categories changed', options.options.xaxis.categories);
+  }, [options])
 
   /**
    * print stock info when it changes
    */
   useEffect(() => {
-    /**
-     * Fill categories and data lists
-     * @param elemCount is num of elems we wanna plot
-     */
-    const fillChart = (elemCount) => {
-      for (let i = 0; i < elemCount; i++ ) {
-          // fill categories
-          options.options.xaxis.categories.append(setCategory(stockInfo[i].t))
-      } 
-    }
-
-    /**
-     * Converts timestamps to date
-     * @param {*} timestamp 
-     */
-    const setCategory = (timestamp) => {
-        date = new Date(timestamp)
-        return date
-    }
-
-    fillChart(10);
-    console.log("Hey now I'm in a state", stockInfo);
+    console.log("Hey now I'm in a state", stockInfo)
   }, [stockInfo])
 
 
