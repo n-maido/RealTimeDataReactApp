@@ -5,7 +5,6 @@ import Chart from "react-apexcharts";
 export const LineChart = (props) => {
     const {options} = props;
 
-
     return (
         <>
             <Chart
