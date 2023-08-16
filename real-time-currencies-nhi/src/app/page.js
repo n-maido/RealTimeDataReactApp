@@ -18,6 +18,9 @@ export default function Home() {
   // poke img is a url, so we init it to ""
   const [stockInfo, setStockInfo] = useState([])
 
+  // number of data points we want to plot
+  const [numDataPoints, setNumDataPoints] = useState(50)
+
   // copy pasted from options.js
   const [options, setOptions] = useState({
     options: { 
@@ -32,7 +35,7 @@ export default function Home() {
     // data points, y axis
     series: [
       {
-        name: "closing-price",
+        name: "AAPL Closing Price",
         data: []
       }
     ]
@@ -93,7 +96,7 @@ export default function Home() {
      * Fill categories with timestamps and series data with closing prices
      * @param elemCount is num of elems we wanna plot
      */
-    const fillChart = (elemCount) => {
+    const fillChart = () => {
       // create copy of options and categories state
       // bc state is immutable: https://reacttraining.com/blog/state-in-react-is-immutable
       // we wanna make a copy, update it, and replace the old with the updated copy
@@ -103,7 +106,7 @@ export default function Home() {
       const seriesCopy = [...optionsCopy.series[0].data]
 
       stockInfo ?
-        stockInfo.slice(0, elemCount).map(item => {
+        stockInfo.slice(0, numDataPoints).map(item => {
           categoriesCopy.push(convertTimestamp(item.t)) //timestamp
           seriesCopy.push(item.c) //closing price
         })
@@ -124,7 +127,7 @@ export default function Home() {
         return `${date.getHours()}:${date.getMinutes()}`
     }
 
-    fillChart(10)
+    fillChart()
     console.log("Hey now I'm in a state", stockInfo)
   }, [stockInfo])
 

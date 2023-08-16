@@ -5,7 +5,8 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
-  background-image: url();
+  /*set a background img*/
+  /*background-image: url("../../public/wallpaper.png");*/
 }
 
 .description {
