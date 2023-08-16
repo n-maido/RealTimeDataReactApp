@@ -1,0 +1,8 @@
+// .vscode/settings.json
+
+{
+    "eslint.workingDirectories": [
+      { "pattern": "apps/*/" },
+      { "pattern": "packages/*/" }
+    ]
+}

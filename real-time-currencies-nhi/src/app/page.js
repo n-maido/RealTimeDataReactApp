@@ -21,6 +21,10 @@ export default function Home() {
   // number of data points we want to plot
   const [numDataPoints, setNumDataPoints] = useState(50)
 
+  // sets a stonks vs not stonks img, based on trend
+  // if downward trend, not stonks, else stonks
+  // const [stonks, setStonks] = useState("")
+
   // copy pasted from options.js
   const [options, setOptions] = useState({
     options: { 
@@ -84,8 +88,19 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    console.log('Categories changed', options.options.xaxis.categories);
-    console.log('Series changed', options.series[0].data);
+    // console.log('Categories changed', options.options.xaxis.categories);
+    // console.log('Series changed', options.series[0].data);
+
+    // compares 1st vs last elem of series 
+    // to determine a donward vs upward trend
+    // and set stonks img accordingly
+    // const calculateStonks = () => {
+    //   options.series[0][0] > options.series[0][options.series[0].length - 1] ?
+    //     setStonks("/notstonks.png")
+    //     :
+    //     setStonks("/stonks.png")
+    // }
+    // calculateStonks()
   }, [options])
 
   /**
@@ -138,8 +153,18 @@ export default function Home() {
   return (
     <main className={styles.main}>
      {
-      options.options.xaxis.categories.length != 0  ?
-        <LineChart stockInfo={stockInfo} options={options} />
+      options.options.xaxis.categories.length >= numDataPoints  ?
+        <div className={styles.container}>
+          {/*old: set a background img: <div style = {{ backgroundImage: 'url("/stonks.png")'}}>*/}
+          {/* <img src='/stonks.png' className={styles.stonks}/> */}
+          {
+            options.series[0][0] > options.series[0][numDataPoints - 1] ?
+              <img alt='Not stonks' src='/notstonks.png' className={styles.stonks}/>
+              :
+              <img alt='Stonks' src='/stonks.png' className={styles.stonks}/>
+          }
+          <LineChart stockInfo={stockInfo} options={options} />
+        </div>
         :
         null
       }
