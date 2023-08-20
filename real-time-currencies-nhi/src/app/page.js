@@ -152,6 +152,11 @@ export default function Home() {
    */
   return (
     <main className={styles.main}>
+      <div className={styles.companies}>
+        <button className={styles.stockButton}> <img src='/apple.png' />  </button>
+        <button className={styles.stockButton}> <img src='/google.png' /> </button>
+        <button className={styles.stockButton}> <img src='/microsoft.png' /> </button>
+      </div>
      {
       options.options.xaxis.categories.length >= numDataPoints  ?
         <div className={styles.container}>
