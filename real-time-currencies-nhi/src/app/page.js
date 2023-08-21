@@ -21,6 +21,9 @@ export default function Home() {
   // number of data points we want to plot
   const [numDataPoints, setNumDataPoints] = useState(50)
 
+  // the company whose stocks we want to show
+  const [currentStock, setCurrentStock] = useState("AAPL")
+
   // sets a stonks vs not stonks img, based on trend
   // if downward trend, not stonks, else stonks
   // const [stonks, setStonks] = useState("")
@@ -39,11 +42,29 @@ export default function Home() {
     // data points, y axis
     series: [
       {
-        name: "AAPL Closing Price",
+        name: `${currentStock} Closing Price`,
         data: []
       }
     ]
   });
+
+  async function getInfo() {
+    try {
+      // good practice to store api key as a const
+      const APIKEY = "n_3DyIOIplkKfROXDClkaAxKCVLtVXIh"
+      // we're waiting for the info to arrive
+      // using promises: "i'll give you this info, but wait until i finish your request"
+      // await waits until we get the info
+      const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/${currentStock}/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
+      // we convert the data, but since we need to wait for the data first, this line needs "await" too
+      const jsonData = await data.json()
+      
+      setStockInfo(jsonData.results)
+      console.log(jsonData.results);
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
 
 
@@ -57,23 +78,23 @@ export default function Home() {
   useEffect(() => {
     // get info from polygon api docs: https://polygon.io/docs/stocks/get_v2_aggs_ticker__stocksticker__range__multiplier___timespan___from___to 
     // async: this func runs at the same time as hte rest of our code
-    async function getInfo() {
-      try {
-        // good practice to store api key as a const
-        const APIKEY = "n_3DyIOIplkKfROXDClkaAxKCVLtVXIh"
-        // we're waiting for the info to arrive
-        // using promises: "i'll give you this info, but wait until i finish your request"
-        // await waits until we get the info
-        const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
-        // we convert the data, but since we need to wait for the data first, this line needs "await" too
-        const jsonData = await data.json()
+    // async function getInfo() {
+    //   try {
+    //     // good practice to store api key as a const
+    //     const APIKEY = "n_3DyIOIplkKfROXDClkaAxKCVLtVXIh"
+    //     // we're waiting for the info to arrive
+    //     // using promises: "i'll give you this info, but wait until i finish your request"
+    //     // await waits until we get the info
+    //     const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/${company}/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
+    //     // we convert the data, but since we need to wait for the data first, this line needs "await" too
+    //     const jsonData = await data.json()
         
-        setStockInfo(jsonData.results)
-        console.log(jsonData.results);
-      } catch (error) {
-        console.error(error)
-      }
-    }
+    //     setStockInfo(jsonData.results)
+    //     console.log(jsonData.results);
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // }
 
     
     // we first declare the funcs above, then run it below
@@ -102,6 +123,11 @@ export default function Home() {
     // }
     // calculateStonks()
   }, [options])
+
+  useEffect(() => {
+    console.log(`the company changed to ${currentStock}`);
+    getInfo()
+  }, [currentStock])
 
   /**
    * print stock info when it changes
@@ -147,15 +173,17 @@ export default function Home() {
   }, [stockInfo])
 
 
+
+
   /**
    * JSX code usually goes here
    */
   return (
     <main className={styles.main}>
       <div className={styles.companies}>
-        <button className={styles.stockButton}> <img src='/apple.png' />  </button>
-        <button className={styles.stockButton}> <img src='/google.png' /> </button>
-        <button className={styles.stockButton}> <img src='/microsoft.png' /> </button>
+        <button className={styles.stockButton} onClick={() => setCurrentStock("AAPL")}> <img src='/apple.png' />  </button>
+        <button className={styles.stockButton} onClick={() => setCurrentStock("GOOGL")}> <img src='/google.png' /> </button>
+        <button className={styles.stockButton} onClick={() => setCurrentStock("MSFT")}> <img src='/microsoft.png' /> </button>
       </div>
      {
       options.options.xaxis.categories.length >= numDataPoints  ?
