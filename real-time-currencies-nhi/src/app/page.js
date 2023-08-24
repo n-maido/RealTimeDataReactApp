@@ -6,7 +6,7 @@ import styles from './page.module.css'
 import LineChart from './components/LineChart';
 
 // useState and useEffect are hooks
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 import { resolve } from 'styled-jsx/css';
 
@@ -48,23 +48,30 @@ export default function Home() {
     ]
   });
 
-  async function getInfo() {
+  // get info from polygon api docs: https://polygon.io/docs/stocks/get_v2_aggs_ticker__stocksticker__range__multiplier___timespan___from___to 
+  // async: this func runs at the same time as hte rest of our code
+  // https://www.w3schools.com/react/react_usecallback.asp 
+  const fetchStockInfo = useCallback( async() => {
     try {
       // good practice to store api key as a const
       const APIKEY = "n_3DyIOIplkKfROXDClkaAxKCVLtVXIh"
       // we're waiting for the info to arrive
       // using promises: "i'll give you this info, but wait until i finish your request"
       // await waits until we get the info
+      console.log('sending req...');
       const data = await fetch(`https://api.polygon.io/v2/aggs/ticker/${currentStock}/range/1/minute/2023-08-03/2023-08-04?adjusted=true&sort=asc&limit=120&apiKey=${APIKEY}`)
       // we convert the data, but since we need to wait for the data first, this line needs "await" too
       const jsonData = await data.json()
       
       setStockInfo(jsonData.results)
-      console.log(jsonData.results);
+      console.log('request results: ' + jsonData.ticker);
     } catch (error) {
       console.error(error)
     }
-  }
+
+  })
+    
+  
 
 
 
@@ -98,35 +105,22 @@ export default function Home() {
 
     
     // we first declare the funcs above, then run it below
-    getInfo()
+    fetchStockInfo()
 
-    // fill the chart after we receive the data
-    // otherwise we have an empty array that will throw an error
-    // if (stockInfo.length == 120) {
-    //   fillChart(10)
-    // }
+
 
   }, [])
 
   useEffect(() => {
     // console.log('Categories changed', options.options.xaxis.categories);
-    // console.log('Series changed', options.series[0].data);
-
-    // compares 1st vs last elem of series 
-    // to determine a donward vs upward trend
-    // and set stonks img accordingly
-    // const calculateStonks = () => {
-    //   options.series[0][0] > options.series[0][options.series[0].length - 1] ?
-    //     setStonks("/notstonks.png")
-    //     :
-    //     setStonks("/stonks.png")
-    // }
-    // calculateStonks()
   }, [options])
 
   useEffect(() => {
     console.log(`the company changed to ${currentStock}`);
-    getInfo()
+    // clear the stockInfo array
+    setStockInfo([])
+    fetchStockInfo()
+
   }, [currentStock])
 
   /**
